@@ -12,10 +12,20 @@ contract DeployFeedProxyCallback is Script {
     uint256 private constant INITIAL_AMOUNT = 0.001 ether;
 
     function run() public returns (FeedProxyCallback deployed) {
+        string memory path = "./script/artifacts/feed.json";
+        string memory json = vm.readFile(path);
+
+        uint8 decimals = uint8(vm.parseJsonUint(json, ".decimals"));
+        string memory description = vm.parseJsonString(json, ".description");
+        address feedAddress = vm.parseJsonAddress(json, ".feedProxy");
+
         vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
 
         deployed = new FeedProxyCallback{value: INITIAL_AMOUNT}(
-            SEPOLIA_PROXY_ADDR
+            SEPOLIA_PROXY_ADDR,
+            feedAddress,
+            decimals,
+            description
         );
 
         vm.stopBroadcast();

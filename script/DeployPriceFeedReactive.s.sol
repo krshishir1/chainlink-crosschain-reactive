@@ -6,7 +6,7 @@ import {PriceFeedReactive} from "../src/PriceFeedReactive.sol";
 
 // Testing deployment in Sepolia with private key.
 
-contract DeployFeedProxyCallback is Script {
+contract DeployPriceFeedReactive is Script {
     uint256 private constant ORIGIN_CHAIN_ID = 11155111;
     address private constant ORIGIN_FEED_ADDR =
         0x694AA1769357215DE4FAC081bf1f309aDC325306; // ETH/USD setup for sepolia

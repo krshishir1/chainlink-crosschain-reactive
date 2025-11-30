@@ -5,6 +5,8 @@ pragma solidity >=0.8.0;
 import "@reactive/contracts/interfaces/IReactive.sol";
 import "@reactive/contracts/abstract-base/AbstractPausableReactive.sol";
 
+import {IPriceFeed} from "./interfaces/IPriceFeed.sol";
+
 // cast keccak256 "AnswerUpdated(int256,uint256,uint256)"
 
 struct PriceUpdate {
@@ -78,23 +80,23 @@ contract PriceFeedReactive is IReactive, AbstractPausableReactive {
             log._contract == i_originFeed &&
             log.topic_0 == ANSWER_UPDATED_TOPIC0
         ) {
-            int256 answer = int256(log.topic_1);
-            uint80 roundId = uint80(log.topic_2);
+            int256 emittedAnswer = int256(log.topic_1);
+            uint80 emittedRoundId = uint80(log.topic_2);
             uint256 updatedAt = abi.decode(log.data, (uint256));
 
-            if (lastRoundId <= roundId) {
+            if (emittedRoundId <= lastRoundId) {
                 return;
             }
 
-            lastRoundId = roundId;
+            lastRoundId = emittedRoundId;
 
             bytes memory payload = abi.encodeWithSignature(
                 "callback(address,(address,uint80,int256,uint256))",
                 address(0), // placeholder, overwritten by ReactVM id
                 PriceUpdate({
                     sourceFeed: i_originFeed,
-                    roundId: roundId,
-                    answer: answer,
+                    roundId: emittedRoundId,
+                    answer: emittedAnswer,
                     updatedAt: updatedAt
                 })
             );
