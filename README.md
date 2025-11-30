@@ -53,3 +53,21 @@ make deploy-reactive CHAIN_ID="" PRICE_FEED=""
 ```
 
 Note: Make sure to have `FEED_DESTINATION` contract address in .env variable
+
+### Testing contract
+
+Run the following commands to get latest pricefeed (roundId, price and updatedAt data), decimals, description and getting source origin address
+
+```bash
+make read-latestFeed
+make read-decimals
+make read-description
+make read-originFeed
+```
+
+### Resume/Pause RC Contract
+
+```bash
+make pause-reactive REACTIVE_ADDR=""
+make resume-reactive REACTIVE_ADDR=""
+```
