@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
 import "../src/PriceFeed.sol";
+import {IPriceFeed} from "../src/interfaces/IPriceFeed.sol";
 
 // import "./mocks/MockV3Aggregator.sol";
 
@@ -21,8 +22,17 @@ contract PriceFeedConsumerTest is Test {
         priceFeed = new PriceFeedConsumer(feedAddress);
     }
 
-    function test_getLatestPrice() public {
+    function test_getLatestPrice() public view {
         int256 price = priceFeed.getLatestPrice();
         console.log(price);
+    }
+
+    function test_getLatestPriceData() public view {
+        IPriceFeed.PriceData memory data = priceFeed.getLatestPriceData();
+        console.log("Round Id:", data.roundId);
+        console.log("Answer: ", data.answer);
+        console.log("Started At: ", data.startedAt);
+        console.log("Updated At: ", data.updatedAt);
+        console.log("answeredInRound: ", data.answeredInRound);
     }
 }

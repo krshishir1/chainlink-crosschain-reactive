@@ -9,6 +9,7 @@ out/
 
 # Docs
 docs/
+testing.md
 
 # Dotenv file
 .env
