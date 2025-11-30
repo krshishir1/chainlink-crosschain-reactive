@@ -28,4 +28,28 @@ This project solves that by:
 
 ## Contract CI/CD Deployments
 
-This project supports deployments for origin and callback address.
+This project supports deployments for origin and callback address with a single command.
+
+### ENV Variables (.env.example)
+
+```
+ORIGIN_RPC_URL=""
+DEST_RPC_URL=""
+REACTIVE_RPC_URL=""
+PRIVATE_KEY=""
+FEED_DESTINATION="" (Deployed contract address of FeedProxyCallback.sol)
+```
+
+**Step 1**: Deploy FeedProxyCallback.sol on a destination chain. Make sure to setup all .env variables
+
+```bash
+make deploy-all
+```
+
+**Step 2**: Deploy PriceFeedReactive.sol using the following command
+
+```bash
+make deploy-reactive CHAIN_ID="" PRICE_FEED=""
+```
+
+Note: Make sure to have `FEED_DESTINATION` contract address in .env variable
