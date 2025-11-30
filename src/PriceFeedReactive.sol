@@ -7,8 +7,6 @@ import "@reactive/contracts/abstract-base/AbstractPausableReactive.sol";
 
 import {IPriceFeed} from "./interfaces/IPriceFeed.sol";
 
-// cast keccak256 "AnswerUpdated(int256,uint256,uint256)"
-
 struct PriceUpdate {
     address sourceFeed;
     uint80 roundId;
@@ -17,6 +15,7 @@ struct PriceUpdate {
 }
 
 contract PriceFeedReactive is IReactive, AbstractPausableReactive {
+    // cast keccak256 "AnswerUpdated(int256,uint256,uint256)"
     uint256 public constant ANSWER_UPDATED_TOPIC0 =
         0x0559884fd3a460db3073b7fc896cc77986f16e378210ded43186175bf646fc5f;
 

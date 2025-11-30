@@ -1,66 +1,31 @@
-## Foundry
+# Cross-chain Oracle Price Feed
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
 
-Foundry consists of:
+Chainlink Price Feeds are critical infrastructure for DeFi, perpetual exchanges, lending protocols, derivatives, and risk-managed smart contracts. However, not all chains have native Chainlink deployments.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+**Note:** This project is using `ETH/USD` as an example for cross-chain testing and deployment. The project can be further expanded to include more data feeds supported by Chainlink.
 
-## Documentation
+This project solves that by:
 
-https://book.getfoundry.sh/
+- Reading canonical feeds from an origin network (e.g., Ethereum, Sepolia, Arbitrum)
+- Tracking `AnswerUpdated(int256,uint256,uint256)` in a particular chain in Reactive Contract
+- Updating a destination-side FeedProxy contract, by managing logs and sending callbacks from Reactive Contract
+- Exposing `getLatestFeedData()` similar to real Chainlink aggregator `getLatestRoundData()` in the `src/FeedProxyCallback.sol` contract
 
-## Usage
+## Contracts
 
-### Build
+**Reactive Contract**: `src/PriceFeedReactive.sol` subscribes to `AnswerUpdated(int256,uint256,uint256)` events via `ANSWER_UPDATED_TOPIC0` on any particular chain. When the AnswerUpdated event is received, it updates the `lastRoundId` to the RC constract and returns the callback the FeedProxy destination contract `src/FeedProxyCallback.sol`. The callback event includes:
+`sourceFeed(address), roundId(uint80), answer(int256), updatedAt(uint256)`.
 
-```shell
-$ forge build
-```
+**PriceFeed ProxyCallback Contract**: `src/FeedProxyCallback.sol` manages the receival of the callback from the Reactive contract. It is deployed in a particular chain where Chainlink pricefeed is not available. `src/FeedProxyCallback.sol` ensures the Chainlink-compatible pricefeed data to this chain. It includes the following functions: `getLatestFeedData()`, `getDecimals()`, and `getDescription()`
 
-### Test
+**HelperConfig Contract**: `script/build/HelperConfig.s.sol` helps to identify the current chainid and returns the compatible `NetworgConfig(priceFeedAddress, destProxyAddress, chainid)` for that chain. It helps for quick deployment setup.
 
-```shell
-$ forge test
-```
+**DeployPriceFeedOrigin.s.sol**: This contract gets the original Chainlink price feed address, and stores data like `decimals`, `description` and `feed_address` for the `FeedProxyCallback.sol` contract deployment.
 
-### Format
+**DeployFeedProxyCallback.s.sol**: Deploys the `FeedProxyCallback.sol` on a particular chain.
 
-```shell
-$ forge fmt
-```
+## Contract CI/CD Deployments
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+This project supports deployments for origin and callback address.
