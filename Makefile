@@ -5,8 +5,6 @@ SCRIPT_ARGS := --rpc-url $(ORIGIN_RPC_URL) --private-key $(PRIVATE_KEY) --broadc
 REACTIVE_ARGS := --rpc-url $(REACTIVE_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast 
 CROSS_ARGS := --rpc-url $(DEST_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast 
 
-
-
 build:
 	forge build
 
