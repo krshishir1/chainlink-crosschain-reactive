@@ -119,13 +119,18 @@ contract PriceFeedReactive is IReactive, AbstractPausableReactive {
                 return;
             }
 
+            uint256 startedAt = startedAtForRound[startRoundId];
+            if (startedAt == 0) {
+                startedAt = updatedAt;
+            }
+
             bytes memory payload = abi.encodeWithSignature(
                 "callback(address,(uint80,int256,uint256,uint256,uint80))",
                 address(0), // placeholder, overwritten by ReactVM id
                 PriceUpdate({
                     roundId: startRoundId,
                     answer: emittedAnswer,
-                    startedAt: startedAtForRound[startRoundId],
+                    startedAt: startedAt,
                     updatedAt: updatedAt,
                     answeredInRound: emittedRoundId
                 })
