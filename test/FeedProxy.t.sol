@@ -1,4 +1,51 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-// testing feed proxy contracts here...
+import "forge-std/Test.sol";
+
+import {MockV3Aggregator} from "./mocks/MockV3Aggregator.sol";
+import {FeedProxyCallback} from "../src/FeedProxyCallback.sol";
+
+contract FeedProxyTest is Test {
+    address public constant MOCK_FEED_ADDR =
+        0x323506f36753703E3b2Fa8D732913015aa685889;
+    address private constant FEED_CALLBACK_ADDR =
+        0x02B40609D80F8Cb2488a38B50b4cB35d3f73b965;
+
+    MockV3Aggregator mock;
+
+    event AnswerUpdated(
+        int256 indexed current,
+        uint256 indexed roundId,
+        uint256 updatedAt
+    );
+
+    function setUp() public {
+        console.log(block.chainid);
+        string memory RPC_URL = vm.envString("ORIGIN_RPC_URL");
+
+        vm.createSelectFork(RPC_URL);
+        mock = MockV3Aggregator(MOCK_FEED_ADDR);
+    }
+
+    function testUpdateAnswer_EmitsEvent() public {
+        int256 answer = 2050e8;
+        uint80 latestRound = mock.latestRound();
+
+        vm.warp(1700000000);
+
+        // Expect event from the actual deployed contract
+        vm.expectEmit(true, true, true, true);
+        emit AnswerUpdated(answer, latestRound + 1, 1700000000);
+
+        // Call the function on the real deployed mock
+        mock.updateAnswer(answer);
+
+        // Validate state
+        assertEq(mock.latestRound(), latestRound + 1);
+        assertEq(mock.latestAnswer(), answer);
+        assertEq(mock.latestTimestamp(), 1700000000);
+        assertEq(mock.answers(latestRound + 1), answer);
+        assertEq(mock.timestamps(latestRound + 1), 1700000000);
+    }
+}

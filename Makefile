@@ -3,11 +3,16 @@ include .env
 CHAIN_ID ?= 11155111
 PRICE_FEED ?= 0x694AA1769357215DE4FAC081bf1f309aDC325306
 REACTIVE_ADDR ?= 0x0000000000000000000000000000000000000000
+MOCK_ADDR ?= 0x0000000000000000000000000000000000000000
+DECIMALS ?= 8
+INITIAL_PRICE ?= 200000000000
 
-NETWORK_ARGS := --fork-url $(FORK_URL) 
+NETWORK_ARGS := --fork-url $(ORIGIN_RPC_URL) 
 ORIGIN_ARGS := --rpc-url $(ORIGIN_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast 
 DESTINATION_ARGS := --rpc-url $(DEST_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast 
-REACTIVE_ARGS := --broadcast --rpc-url $(REACTIVE_RPC_URL) --private-key $(PRIVATE_KEY) --constructor-args $(CHAIN_ID) $(PRICE_FEED) $(FEED_DESTINATION)
+REACTIVE_ARGS := --broadcast --rpc-url $(REACTIVE_RPC_URL) --private-key $(PRIVATE_KEY) --value 0.01ether --constructor-args $(CHAIN_ID) $(PRICE_FEED) $(FEED_DESTINATION)
+MOCK_ARGS := --broadcast --rpc-url $(ORIGIN_RPC_URL) --private-key $(PRIVATE_KEY) --constructor-args $(DECIMALS) $(INITIAL_PRICE)
+TESTING_ARGS := --rpc-url $(ORIGIN_RPC_URL) --private-key $(PRIVATE_KEY)
 
 build:
 	forge build
@@ -22,6 +27,7 @@ build-feedproxy:
 		"$(DESCRIPTION)" \
 		--private-key $(PRIVATE_KEY)
 
+
 deploy-reactive:
 	forge create src/PriceFeedReactive.sol:PriceFeedReactive $(REACTIVE_ARGS)
 
@@ -35,6 +41,9 @@ deploy-all:
 	forge script script/DeployPriceFeedOrigin.s.sol $(ORIGIN_ARGS) -vvv
 	forge script script/DeployFeedProxyCallback.s.sol $(DESTINATION_ARGS) -vvv
 
+deploy-testing:
+	forge script script/DeployMockPriceFeed.s.sol $(ORIGIN_ARGS) -vvv
+	forge script script/DeployFeedProxyCallback.s.sol $(DESTINATION_ARGS) -vvv
 
 
 read-latestFeed:
@@ -54,3 +63,10 @@ pause-reactive:
 
 resume-reactive: 
 	cast send $(REACTIVE_ADDR) "resume()" --rpc-url $(REACTIVE_RPC_URL) --private-key $(PRIVATE_KEY)
+
+send-mockUpdate:
+	cast send $(MOCK_ADDR) "updateAnswer(int256)" 2050e8 $(TESTING_ARGS)
+
+testing-mockEvent:
+	forge test --mt testUpdateAnswer_EmitsEvent $(TESTING_ARGS) -vvv
+
