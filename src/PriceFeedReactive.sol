@@ -33,7 +33,7 @@ contract PriceFeedReactive is IReactive, AbstractPausableReactive {
     address private immutable i_feedProxyUpdater;
 
     mapping(uint80 => uint256) private startedAtForRound;
-    uint256 private startRoundId;
+    uint80 private startRoundId;
 
     constructor(
         uint256 _originChainId,
