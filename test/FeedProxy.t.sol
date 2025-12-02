@@ -7,6 +7,12 @@ import {MockV3Aggregator} from "./mocks/MockV3Aggregator.sol";
 import {FeedProxyCallback} from "../src/FeedProxyCallback.sol";
 
 contract FeedProxyTest is Test {
+    /* 
+        Run `make deploy-testing`
+        Get MOCK_FEED_ADDR from terminal logs or srcipt/artifacts/feed.json => feedProxy
+        Get FEED_CALLBACK_ADDR from terminal logs
+    */
+
     address public constant MOCK_FEED_ADDR =
         0x323506f36753703E3b2Fa8D732913015aa685889;
     address private constant FEED_CALLBACK_ADDR =

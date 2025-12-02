@@ -6,6 +6,7 @@ REACTIVE_ADDR ?= 0x0000000000000000000000000000000000000000
 MOCK_ADDR ?= 0x0000000000000000000000000000000000000000
 DECIMALS ?= 8
 INITIAL_PRICE ?= 200000000000
+ANSWER ?= 205000000000
 
 NETWORK_ARGS := --fork-url $(ORIGIN_RPC_URL) 
 ORIGIN_ARGS := --rpc-url $(ORIGIN_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast 
@@ -65,8 +66,8 @@ resume-reactive:
 	cast send $(REACTIVE_ADDR) "resume()" --rpc-url $(REACTIVE_RPC_URL) --private-key $(PRIVATE_KEY)
 
 send-mockUpdate:
-	cast send $(MOCK_ADDR) "updateAnswer(int256)" 2050e8 $(TESTING_ARGS)
+	cast send $(MOCK_ADDR) "updateAnswer(int256)" $(ANSWER) $(TESTING_ARGS)
 
 testing-mockEvent:
-	forge test --mt testUpdateAnswer_EmitsEvent $(TESTING_ARGS) -vvv
+	forge test --mt testUpdateAnswer_EmitsEvent $(NETWORK_ARGS) -vvv
 

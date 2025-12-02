@@ -71,3 +71,36 @@ make read-originFeed
 make pause-reactive REACTIVE_ADDR=""
 make resume-reactive REACTIVE_ADDR=""
 ```
+
+### Testing the entire workflow with mock Chainlink contracts
+
+**Step 1)** Deploying mock Chainlink feed address on any particular chain. The `test/mocks/MockV3Aggregator.sol` has a function `updateAnswer(int256)` that lets to change the `answer` and emits the `AnswerUpdated` event.
+
+```bash
+make deploy-testing
+```
+
+This command deploys both the mock feed and feed callback contracts.
+
+You can get deployed `mock_feed` address and `feed_destination` address from logs. You can also get mockfeed address from `script/artifacts/feed.json => feedProxy`.
+
+Save the `feed_destination` address in the .env variable.
+
+**Step 2)** Deploy the `PriceFeedReactive.sol` contract with mock_feed address attached.
+
+```bash
+make deploy-reactive CHAIN_ID="" PRICE_FEED=""
+```
+
+Here:
+`PRICE_FEED`= the deployed MOCK_FEED_ADDR
+`FEED_DESTINATION` → comes from the .env file (your deployed FeedCallback contract)
+
+**Step 3)** Run the test setup
+
+```bash
+make send-mockUpdate MOCK_ADDR="" ANSWER=""
+make read-latestFeed
+```
+
+The latestFeed must return the updated answer with roundId updated. Congrats!
