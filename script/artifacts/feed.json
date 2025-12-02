@@ -1,6 +1,6 @@
 {
   "chainid": 11155111,
   "decimals": 8,
-  "description": "ETH / USD",
-  "feedProxy": "0x323506f36753703E3b2Fa8D732913015aa685889"
+  "description": "MOCK FEED",
+  "feedProxy": "0xe56E4A4176B498793D13AD84d910d604b7012Ab8"
 }

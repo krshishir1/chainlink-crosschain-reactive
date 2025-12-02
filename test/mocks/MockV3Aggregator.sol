@@ -8,7 +8,15 @@ contract MockV3Aggregator {
         uint256 updatedAt
     );
 
+    event NewRound(
+        uint256 indexed roundId,
+        address indexed startedBy,
+        uint256 startedAt
+    );
+
     uint8 public decimals;
+    string public description = "MOCK FEED";
+
     int256 public latestAnswer;
     uint256 public latestTimestamp;
     uint80 public latestRound;
@@ -29,6 +37,7 @@ contract MockV3Aggregator {
         answers[latestRound] = _answer;
         timestamps[latestRound] = block.timestamp;
 
+        emit NewRound(latestRound, msg.sender, latestTimestamp);
         emit AnswerUpdated(_answer, latestRound, latestTimestamp);
     }
 

@@ -48,7 +48,7 @@ deploy-testing:
 
 
 read-latestFeed:
-	cast call $(FEED_DESTINATION) "getLatestFeedData()(address,uint80,int256,uint256)" --rpc-url $(DEST_RPC_URL)
+	cast call $(FEED_DESTINATION) "getLatestFeedData()(uint80,int256,uint256,uint256,uint80)" --rpc-url $(DEST_RPC_URL)
 
 read-decimals:
 	cast call $(FEED_DESTINATION) "getDecimals()(uint8)" --rpc-url $(DEST_RPC_URL)
@@ -66,7 +66,7 @@ resume-reactive:
 	cast send $(REACTIVE_ADDR) "resume()" --rpc-url $(REACTIVE_RPC_URL) --private-key $(PRIVATE_KEY)
 
 send-mockUpdate:
-	cast send $(MOCK_ADDR) "updateAnswer(int256)" $(ANSWER) $(TESTING_ARGS)
+	cast send --gas-limit 1000000 $(MOCK_ADDR) "updateAnswer(int256)" $(ANSWER) $(TESTING_ARGS)
 
 testing-mockEvent:
 	forge test --mt testUpdateAnswer_EmitsEvent $(NETWORK_ARGS) -vvv

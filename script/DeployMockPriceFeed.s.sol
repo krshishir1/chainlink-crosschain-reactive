@@ -12,7 +12,7 @@ contract DeployMockPriceFeed is Script {
 
     function run() external returns (MockV3Aggregator mockFeed) {
         uint8 decimals = 8;
-        string memory description = "ETH / USD";
+        string memory description = "MOCK FEED";
         int256 initialPrice = 200000000000;
 
         vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
